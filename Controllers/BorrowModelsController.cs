@@ -14,8 +14,10 @@ namespace DotnetPracticeCrud.Controllers
     public class BorrowModelsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public bool BorrowOverdue { get; private set; }
+        private bool IsBorrowOverdue(DateTime borrowDate)
+        {
+            return borrowDate < DateTime.Today.AddMonths(-3);
+        }
 
         public BorrowModelsController(ApplicationDbContext context)
         {
@@ -54,10 +56,12 @@ namespace DotnetPracticeCrud.Controllers
         {
             ViewBag.ClientId = new SelectList(_context.ClientModel, "Id", "FirstName");
             ViewBag.BookId = new SelectList(_context.BookModel, "Id", "BookName");
+            
 
             return View(new BorrowModel
             {
                 BorrowDate = DateTime.Today
+
             });
 
         }
@@ -68,10 +72,10 @@ namespace DotnetPracticeCrud.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ClientId,BookId,BorrowDate,BorrowOverdue")] BorrowModel borrowModel)
         {
-            // Treat empty/omitted date as invalid
-            borrowModel.BorrowOverdue = false;
             if (borrowModel.BorrowDate == default)
                 ModelState.AddModelError("BorrowDate", "Borrow date is required.");
+
+            borrowModel.BorrowOverdue = IsBorrowOverdue(borrowModel.BorrowDate);
 
             if (!ModelState.IsValid)
             {
@@ -121,19 +125,14 @@ namespace DotnetPracticeCrud.Controllers
             borrowModel.BorrowOverdue = false;
             if (id != borrowModel.Id) return NotFound();
 
-            // Basic validation (same as Create)
             if (borrowModel.BorrowDate == default)
                 ModelState.AddModelError("BorrowDate", "Borrow date is required.");
 
-            // Optional: ensure FKs exist to avoid confusing FK errors
-            if (!await _context.ClientModel.AnyAsync(c => c.Id == borrowModel.ClientId))
-                ModelState.AddModelError("ClientId", $"Client #{borrowModel.ClientId} does not exist.");
-            if (!await _context.BookModel.AnyAsync(b => b.Id == borrowModel.BookId))
-                ModelState.AddModelError("BookId", $"Book #{borrowModel.BookId} does not exist.");
+            borrowModel.BorrowOverdue = IsBorrowOverdue(borrowModel.BorrowDate);
 
             if (!ModelState.IsValid)
             {
-                // Re-populate dropdowns and return the same view
+               
                 ViewBag.ClientId = new SelectList(_context.ClientModel, "Id", "FirstName", borrowModel.ClientId);
                 ViewBag.BookId = new SelectList(_context.BookModel, "Id", "BookName", borrowModel.BookId);
             }
@@ -146,13 +145,11 @@ namespace DotnetPracticeCrud.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                // Row was deleted or PK mismatch
                 if (!_context.BorrowModel.Any(e => e.Id == borrowModel.Id)) return NotFound();
                 throw;
             }
             catch (DbUpdateException ex)
             {
-                // Surface the real DB error on the page
                 ModelState.AddModelError(string.Empty, "DB ERROR: " + (ex.InnerException?.Message ?? ex.Message));
                 ViewBag.ClientId = new SelectList(_context.ClientModel, "Id", "FirstName", borrowModel.ClientId);
                 ViewBag.BookId = new SelectList(_context.BookModel, "Id", "BookName", borrowModel.BookId);
