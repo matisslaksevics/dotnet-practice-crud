@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotnetPracticeCrud.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250804120134_initialsetup")]
+    [Migration("20250804130720_initialsetup")]
     partial class initialsetup
     {
         /// <inheritdoc />
@@ -57,12 +57,15 @@ namespace DotnetPracticeCrud.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HasActiveBook")
+                    b.Property<bool>("HasBook")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("bookId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
