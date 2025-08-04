@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DotnetPracticeCrud.Data;
 using DotnetPracticeCrud.Models;
-using DotnetPracticeCrud.Data.Migrations;
 
 namespace DotnetPracticeCrud.Controllers
 {

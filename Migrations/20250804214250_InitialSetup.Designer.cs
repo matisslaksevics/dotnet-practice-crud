@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DotnetPracticeCrud.Data.Migrations
+namespace DotnetPracticeCrud.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250804130720_initialsetup")]
-    partial class initialsetup
+    [Migration("20250804214250_InitialSetup")]
+    partial class InitialSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,6 @@ namespace DotnetPracticeCrud.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Availability")
-                        .HasColumnType("bit");
-
                     b.Property<string>("BookName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -43,6 +40,35 @@ namespace DotnetPracticeCrud.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BookModel");
+                });
+
+            modelBuilder.Entity("DotnetPracticeCrud.Models.BorrowModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BorrowDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("BorrowOverdue")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("BorrowModel");
                 });
 
             modelBuilder.Entity("DotnetPracticeCrud.Models.ClientModel", b =>
@@ -57,15 +83,9 @@ namespace DotnetPracticeCrud.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HasBook")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("bookId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -274,6 +294,25 @@ namespace DotnetPracticeCrud.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DotnetPracticeCrud.Models.BorrowModel", b =>
+                {
+                    b.HasOne("DotnetPracticeCrud.Models.BookModel", "Book")
+                        .WithMany("Borrows")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DotnetPracticeCrud.Models.ClientModel", "Client")
+                        .WithMany("Borrows")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Client");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -323,6 +362,16 @@ namespace DotnetPracticeCrud.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DotnetPracticeCrud.Models.BookModel", b =>
+                {
+                    b.Navigation("Borrows");
+                });
+
+            modelBuilder.Entity("DotnetPracticeCrud.Models.ClientModel", b =>
+                {
+                    b.Navigation("Borrows");
                 });
 #pragma warning restore 612, 618
         }
