@@ -54,7 +54,7 @@ namespace DotnetPracticeCrud.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BookName,Availability")] BookModel bookModel)
+        public async Task<IActionResult> Create([Bind("Id,BookName")] BookModel bookModel)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace DotnetPracticeCrud.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BookName,Availability")] BookModel bookModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BookName")] BookModel bookModel)
         {
             if (id != bookModel.Id)
             {

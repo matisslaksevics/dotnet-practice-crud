@@ -1,4 +1,4 @@
-﻿@model DotnetPracticeCrud.Models.ClientModel
+﻿@model DotnetPracticeCrud.Models.BorrowModel
 
 @{
     ViewData["Title"] = "Create";
@@ -6,21 +6,23 @@
 
 <h1>Create</h1>
 
-<h4>ClientModel</h4>
+<h4>BorrowModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
+                <label asp-for="BookId" class="control-label"></label>
+                <select asp-for="BookId" class ="form-control" asp-items="ViewBag.BookId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="BorrowDate" class="control-label"></label>
+                <input asp-for="BorrowDate" class="form-control" type="date" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
